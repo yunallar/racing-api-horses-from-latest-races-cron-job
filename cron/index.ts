@@ -1,15 +1,26 @@
 import { connectToMongo, disconnectFromMongo } from "../utils/mongo";
-import { fetchBigRaces } from "../utils/fetchBigRaces";
-import { fetchNormalRaces } from "../utils/fetchNormalRaces";
+import { getAllFutureRaces } from "../utils/getAllFutureRaces";
+import { fetchHorseIdsOwnerIdsFromFutureRaces } from "../utils/fetchHorseIdsOwnerIdsFromFutureRaces";
+import { createJobs } from "../utils/createJobs";
 import dotenv from "dotenv";
 dotenv.config();
 
 async function syncData() {
   await connectToMongo();
-  await fetchNormalRaces();
-  await fetchBigRaces();
+  console.log("✅ Connected to MongoDB");
+  const futureRaces = await getAllFutureRaces();
+  console.log(`✅ Retrieved ${futureRaces.length} future races`);
+  const uniqueHorseOwnerIds = await fetchHorseIdsOwnerIdsFromFutureRaces(
+    futureRaces
+  );
+  console.log(
+    `✅ Extracted ${uniqueHorseOwnerIds.length} unique horse-owner pairs`
+  );
+  const jobsSummary = await createJobs(uniqueHorseOwnerIds);
+  console.log("✅ Jobs created summary:", jobsSummary);
   console.log(`✅ Cron job completed`);
   await disconnectFromMongo();
+  console.log("✅ Disconnected from MongoDB");
   process.exit(0);
 }
 

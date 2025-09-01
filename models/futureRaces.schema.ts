@@ -1,5 +1,95 @@
 import mongoose from "mongoose";
 
+export interface IFutureRaceRunner {
+  horse_id?: string;
+  horse?: string;
+  dob?: string;
+  age?: string;
+  sex?: string;
+  sex_code?: string;
+  colour?: string;
+  region?: string;
+  breeder?: string;
+  dam?: string;
+  dam_id?: string;
+  dam_region?: string;
+  sire?: string;
+  sire_id?: string;
+  sire_region?: string;
+  damsire?: string;
+  damsire_id?: string;
+  damsire_region?: string;
+  trainer?: string;
+  trainer_id?: string;
+  trainer_location?: string;
+  trainer_14_days?: Record<string, any>;
+  owner?: string;
+  owner_id?: string;
+  prev_trainers?: any[];
+  prev_owners?: any[];
+  comment?: string;
+  spotlight?: string;
+  quotes?: any[];
+  stable_tour?: any[];
+  medical?: any[];
+  number?: string;
+  draw?: string;
+  headgear?: string;
+  headgear_run?: string;
+  wind_surgery?: string;
+  wind_surgery_run?: string;
+  past_results_flags?: any[];
+  lbs?: string;
+  ofr?: string;
+  rpr?: string;
+  ts?: string;
+  jockey?: string;
+  jockey_id?: string;
+  silk_url?: string;
+  last_run?: string;
+  form?: string;
+  trainer_rtf?: string;
+  odds?: any[];
+}
+
+export interface IFutureRace {
+  _id?: any;
+  race_id: string;
+  course?: string;
+  course_id?: string;
+  date: string; // e.g., "2025-05-12"
+  off_time?: string;
+  off_dt?: Date;
+  race_name?: string;
+  distance_round?: string;
+  distance?: string;
+  distance_f?: number;
+  region?: string;
+  pattern?: string;
+  sex_restriction?: string;
+  race_class?: string;
+  type?: string;
+  age_band?: string;
+  rating_band?: string;
+  prize?: string;
+  field_size?: string;
+  going_detailed?: string;
+  rail_movements?: string;
+  stalls?: string;
+  weather?: string;
+  going?: string;
+  surface?: string;
+  jumps?: string;
+  big_race?: boolean;
+  is_abandoned?: boolean;
+  tip?: string;
+  verdict?: string;
+  betting_forecast?: string;
+  runners?: IFutureRaceRunner[];
+  createdAt?: Date;
+  updatedAt?: Date;
+}
+
 const futureRaceSchema = new mongoose.Schema(
   {
     race_id: { type: String, required: true, unique: true, index: true },
