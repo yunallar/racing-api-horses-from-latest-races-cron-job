@@ -10,13 +10,13 @@ async function syncData() {
   console.log("✅ Connected to MongoDB");
   const futureRaces = await getAllFutureRaces();
   console.log(`✅ Retrieved ${futureRaces.length} future races`);
-  const uniqueHorseOwnerIds = await fetchHorseIdsOwnerIdsFromFutureRaces(
+  const uniqueHorsesOwners = await fetchHorseIdsOwnerIdsFromFutureRaces(
     futureRaces
   );
   console.log(
-    `✅ Extracted ${uniqueHorseOwnerIds.length} unique horse-owner pairs`
+    `✅ Extracted ${uniqueHorsesOwners.length} unique horse-owner pairs`
   );
-  const jobsSummary = await createJobs(uniqueHorseOwnerIds);
+  const jobsSummary = await createJobs(uniqueHorsesOwners);
   console.log("✅ Jobs created summary:", jobsSummary);
   console.log(`✅ Cron job completed`);
   await disconnectFromMongo();

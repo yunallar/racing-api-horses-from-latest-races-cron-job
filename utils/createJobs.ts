@@ -1,6 +1,11 @@
 import { Job, JobType } from "../models/job.schema";
 
-export type HorseOwnerPair = { horseId: string; ownerId: string };
+export type HorseOwnerPair = {
+  horseId: string;
+  ownerId: string;
+  horse: string;
+  owner: string;
+};
 
 function chunk<T>(arr: T[], size: number): T[][] {
   if (size <= 0) return [arr];
@@ -10,7 +15,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
 }
 
 /**
- * Create jobs to fetch race results, horse profiles, and owners-horses mapping for each {horseId, ownerId} pair.
+ * Create jobs to fetch race results and horse profiles in batches (payload includes multiple `horseIds`), and owners-horses mapping jobs are now batched with each payload containing multiple items with `horseId`, `horse`, `owner`, and `ownerId`.
  * Jobs are inserted in batches for performance.
  *
  * @param pairs Unique list of { horseId, ownerId } pairs
@@ -34,21 +39,35 @@ export async function createJobs(
   let createdMappingJobs = 0;
 
   for (const batch of batches) {
-    // Build docs for each job type
-    const raceResultDocs = batch.map((p) => ({
-      type: "FETCH_HORSE_RACE_RESULTS" as JobType,
-      payload: { horseId: p.horseId, ownerId: p.ownerId },
-    }));
+    const horseIdsInBatch = batch.map((p) => p.horseId);
 
-    const profileDocs = batch.map((p) => ({
-      type: "FETCH_HORSE_PROFILES" as JobType,
-      payload: { horseId: p.horseId, ownerId: p.ownerId },
-    }));
+    const raceResultDocs = [
+      {
+        type: "FETCH_HORSE_RACE_RESULTS" as JobType,
+        payload: { horseIds: horseIdsInBatch },
+      },
+    ];
 
-    const mappingDocs = batch.map((p) => ({
-      type: "CREATE_OWNERS_HORSES_MAPPING" as JobType,
-      payload: { horseId: p.horseId, ownerId: p.ownerId },
-    }));
+    const profileDocs = [
+      {
+        type: "FETCH_HORSE_PROFILES" as JobType,
+        payload: { horseIds: horseIdsInBatch },
+      },
+    ];
+
+    const mappingDocs = [
+      {
+        type: "CREATE_OWNERS_HORSES_MAPPING" as JobType,
+        payload: {
+          items: batch.map((p) => ({
+            horseId: p.horseId,
+            horse: p.horse,
+            owner: p.owner,
+            ownerId: p.ownerId,
+          })),
+        },
+      },
+    ];
 
     // Insert in separate bulk ops to keep types isolated
     const insertedRace = await Job.insertMany(raceResultDocs, {
