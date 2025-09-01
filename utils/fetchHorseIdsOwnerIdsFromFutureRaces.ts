@@ -1,6 +1,6 @@
-import { DocumentType } from "@typegoose/typegoose";
-import { LeanDocument } from "mongoose";
-import { IFutureRace } from "../models/futureRaces.schema";
+import type { IFutureRace } from "../models/futureRaces.schema";
+
+type FutureRaceLike = Pick<IFutureRace, "runners">;
 
 /**
  * Extract unique horseId-ownerId pairs from an array of future races.
@@ -8,7 +8,7 @@ import { IFutureRace } from "../models/futureRaces.schema";
  * @returns Array of unique { horseId, ownerId } pairs
  */
 export function fetchHorseIdsOwnerIdsFromFutureRaces(
-  futureRaces: Array<LeanDocument<DocumentType<IFutureRace>>> | any[]
+  futureRaces: FutureRaceLike[]
 ): { horseId: string; ownerId: string }[] {
   const uniquePairs = new Map<string, { horseId: string; ownerId: string }>();
 
