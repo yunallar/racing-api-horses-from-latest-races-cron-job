@@ -19,7 +19,7 @@ function chunk<T>(arr: T[], size: number): T[][] {
  * Jobs are inserted in batches for performance.
  *
  * @param pairs Unique list of { horseId, ownerId } pairs
- * @param options.batchSize Number of pairs per batch (defaults to 50)
+ * @param options.batchSize Number of pairs per batch (defaults to 10)
  * @returns Summary of created jobs
  */
 export async function createJobs(
@@ -31,7 +31,7 @@ export async function createJobs(
   createdProfileJobs: number;
   createdMappingJobs: number;
 }> {
-  const batchSize = options?.batchSize ?? 50;
+  const batchSize = options?.batchSize ?? 10;
   const batches = chunk(pairs, batchSize);
 
   let createdRaceResultJobs = 0;
